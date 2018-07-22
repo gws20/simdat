@@ -8,7 +8,7 @@ library(shiny)
 
 function(input, output, session) {
   
-  ##kelompok 4####
+  ####Kelompok 4 - Density Plot ####
   output$a_ArgSelect <- renderUI({
     switch (input$a_dist,
             "rnorm" = list(
@@ -472,7 +472,41 @@ function(input, output, session) {
   })
   
   
-  ####kelompok 5####
+  ####Kelompok 5 - Boostraps & Jacknife####
+  
+  output$contents <- DT::renderDataTable({
+    # input$file1 will be NULL initially. After the user selects
+    # and uploads a file, it will be a data frame with 'name',
+    # 'size', 'type', and 'datapath' columns. The 'datapath'
+    # column will contain the local filenames where the data can
+    # be found.
+    inFile <- input$file1
+    
+    if (is.null(inFile))
+      return(NULL)
+    inFile <- as.data.frame(read.csv(inFile$datapath, header = input$header))
+    updateSelectInput(session, "select",
+                      choices = names(inFile))
+    output$summary <- renderPrint({ 
+      cat(paste("<h4>Data :",input$select," | ",input$sample," sample(s)</h4>"))
+      cat(paste("<br>Mean asli : ",mean(as.numeric(inFile[[input$select]]), na.rm = TRUE)))
+      cat(paste("<br>Mean Bootstrap :",mean(get_bstp(data = as.numeric(inFile[[input$select]]),param = "mean", b=input$sample, na.rm = TRUE))))
+      cat(paste("<br>Mean Jacknife :",mean(get_jackknife(data = as.numeric(inFile[[input$select]]),param = "mean", b=input$sample, na.rm = TRUE))))
+      cat("<br>")
+      cat(paste("<br>Median asli : ",median(as.numeric(inFile[[input$select]]), na.rm = TRUE)))
+      cat(paste("<br>Median Bootstrap :",mean(get_bstp(data = as.numeric(inFile[[input$select]]),param = "median", b=input$sample, na.rm = TRUE))))
+      cat(paste("<br>Median Jacknife :",mean(get_jackknife(data = as.numeric(inFile[[input$select]]),param = "median", b=input$sample, na.rm = TRUE))))
+      cat("<br>")
+      cat("<br>")
+    })
+    inFile
+  })
+  
+  ####Kelompok 2 - Sampling Distribution####
+  
+  ####Kelompok 2 - CLT####
+  ####Kelompok 3 - Confidence Interval#### 
+  ####Kelompok 1 -  MOnte Carlo & MCMC####
  
   
 }

@@ -9,6 +9,7 @@ library(ggplot2)
 
 navbarPage(
   "Teknik Analisis dan Simulasi Data",
+  ####Kelompok 4 - Density Plot ####
   tabPanel("Density Plot",
            # Application title
            titlePanel("Simulasi Distribusi Peluang"),
@@ -47,18 +48,47 @@ navbarPage(
              )
            )
   ),
+  ####Kelompok 5 - Boostraps & Jacknife####
   tabPanel("Bootstrap & jacknife",
-           "Kelompok 5"
+           # Application title
+           titlePanel("Bootstrap and Jacknife"),
+           
+           # Sidebar with a slider input for number of bins 
+           sidebarLayout(
+             sidebarPanel(
+               fileInput("file1", "Choose CSV File",
+                         accept = c(
+                           "text/csv",
+                           "text/comma-separated-values,text/plain",
+                           ".csv")
+               ),
+               checkboxInput("header", "Data with columns name?", TRUE),
+               selectInput("select", "Select columns to simulation", c()),
+               sliderInput("sample", "Number of resamples:",
+                           min = 0, max = 1000,
+                           value = 10)
+             ),
+             
+             # Show a plot of the generated distribution
+             mainPanel(
+               DT::dataTableOutput("contents"),
+               htmlOutput("summary")
+             )
+           )
   ),
+  ####Kelompok 2 - Sampling Distribution####
   tabPanel("Sampling Distribution",
            "Kelompok 2"
   ),
+  ####Kelompok 2 - CLT####
   tabPanel("CLT",
            "Kelompok 2"
   ),
+  ####Kelompok 3 - Confidence Interval#### 
   tabPanel("Confidence Interval",
            "Kelompok 3"
   ),
+  ####Kelompok 1 -  MOnte Carlo & MCMC####
   tabPanel("MOnte Carlo & MCMC",
              "Kelompok 1"
   ),
