@@ -1,0 +1,69 @@
+
+library(googleVis)
+library(DT)
+library(shinythemes)
+library(rsconnect)
+library(plotly)
+library(shiny)
+library(ggplot2)
+update.packages("rlang")
+
+navbarPage(
+  "Teknik Analisis dan Simulasi Data",
+  tabPanel("Density Plot",
+           # Application title
+           titlePanel("Simulasi Distribusi Peluang"),
+           
+           # Sidebar with a slider input for number of bins 
+           sidebarLayout(
+             sidebarPanel(
+               
+               selectInput("a_dist", "Pilih Distribusi:", c(
+                 "Normal"="rnorm",
+                 "Beta"="rbeta",
+                 "Binomial"="rbinom",
+                 "Cauchy"="rcauchy",
+                 "Chi Square"="rchisq",
+                 "Exponensial"="rexp",
+                 "Fisher"="rf",
+                 "Gamma"="rgamma",
+                 "Geometri"="rgeom",
+                 "Hypergeometri"="rhyper",
+                 "Log Normal"="rlnorm",
+                 "Logistik"="rlogis",
+                 "Weibull"="rweibull"
+               )),
+               sliderInput("a_nSample", "Masukan banyaknya sample :",
+                           min = 10, max = 10000, value = 100),
+               htmlOutput("a_ArgSelect"),
+               htmlOutput("a_ArgSelect_extension"),
+               checkboxInput("a_compare", "Bandingkan dengan distribusi lain", FALSE),
+               actionButton("go", "Generate ulang!")
+               
+             ),
+             
+             # Show a plot of the generated distribution
+             mainPanel(
+               htmlOutput("a_mainPage")
+             )
+           )
+  ),
+  tabPanel("Bootstrap & jacknife",
+           "Kelompok 5"
+  ),
+  tabPanel("Sampling Distribution",
+           "Kelompok 2"
+  ),
+  tabPanel("CLT",
+           "Kelompok 2"
+  ),
+  tabPanel("Confidence Interval",
+           "Kelompok 3"
+  ),
+  tabPanel("MOnte Carlo & MCMC",
+             "Kelompok 1"
+  ),
+  
+  theme = shinytheme('flatly')
+)
+

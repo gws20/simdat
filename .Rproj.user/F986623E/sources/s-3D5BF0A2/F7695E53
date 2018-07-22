@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1532247828476.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1905816902",
+    "id" : "F7695E53",
+    "lastKnownWriteTime" : 1532248018,
+    "last_content_update" : 1532248018837,
+    "path" : "E:/Kampus/Tingkat 3/Semester 6/Teknik Analisis dan Simulasi data/tugas akhir/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "cursorPosition" : "6,14",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

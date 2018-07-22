@@ -1,0 +1,475 @@
+
+library(googleVis)
+library(DT)
+library(shinythemes)
+library(rsconnect)
+library(plotly)
+library(shiny)
+
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
+  
+  output$a_ArgSelect <- renderUI({
+    switch (input$a_dist,
+      "rnorm" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_mean", "Masukan nilai Mean :", value = 0),
+        numericInput("a_sd", "Masukan nilai Standar Deviasi :", value = 1, min = 0)
+      ),
+      "rbeta" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_shape1", "Masukan nilai Shape 1 :", 
+                     value = 1, min = 0),
+        numericInput("a_shape2", "Masukan nilai Shape 2 :", 
+                     value = 1, min = 0)
+      ),
+      "rbinom" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_size", "Masukan nilai Size :", 
+                     value = 1, min = 1),
+        numericInput("a_prob", "Masukan nilai prob :", 
+                     value = 0.5, min = 0, max = 1, step = 0.05)
+      ),
+      "rcauchy" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_location", "Masukan nilai location :", 
+                     value = 0),
+        numericInput("a_scale", "Masukan nilai Scale :", 
+                     value = 1, min = 0)
+      ),
+      "rchisq" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_df", "Masukan nilai df :", 
+                     value = 1, min = 1)
+      ),
+      "rexp" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_rate", "Masukan nilai rate :", 
+                     value = 1, min = 0.01, step = 1)
+      ),
+      "rf" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_df1", "Masukan nilai df1 :", 
+                     value = 1, min = 1, step = 1),
+        numericInput("a_df2", "Masukan nilai df2 :", 
+                     value = 1, min = 1, step = 1)
+      ),
+      "rgamma" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_shape", "Masukan nilai shape :", 
+                     value = 1, min = 0, step = 1),
+        numericInput("a_rate", "Masukan nilai rate (1/scale) :", 
+                     value = 1, min = 0.01, step = 1)
+      ),
+      "rgeom" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_prob", "Masukan nilai Prob :", 
+                     value = 0.5, min = 0.01, max = 1, step = 0.05)
+      ),
+      "rhyper" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_m", "Masukan number of white balls in the urn :", 
+                     value = 1, min = 0),
+        numericInput("a_n", "Masukan number of black balls in the urn :", 
+                     value = 1, min = 0)
+      ),
+      "rlnorm" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_meanlog", "Masukan nilai meanlog :", 
+                     value = 0),
+        numericInput("a_sdlog", "Masukan nilai sdlog :", 
+                     value = 1, min = 0)
+      ),
+      "rlogis" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_location", "Masukan nilai location :", 
+                     value = 0),
+        numericInput("a_scale", "Masukan nilai scale :", 
+                     value = 1)
+      ),
+      "rweibull" = list(
+        sliderInput("a_nSize", "Masukan sample size :",
+                    min = 1, max = input$a_nSample-1, value = 10),
+        numericInput("a_shape", "Masukan nilai shape :", 
+                     value = 1, min = 1),
+        numericInput("a_scale", "Masukan nilai scale :", 
+                     value = 1, min = 0)
+      )
+    )
+    
+  })
+  
+  output$ac_ArgSelect <- renderUI({
+    switch (input$ac_dist,
+            "rnorm" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_mean", "Masukan nilai Mean :", value = 0),
+              numericInput("ac_sd", "Masukan nilai Standar Deviasi :", value = 1, min = 0)
+            ),
+            "rbeta" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_shape1", "Masukan nilai Shape 1 :", 
+                           value = 1, min = 0),
+              numericInput("ac_shape2", "Masukan nilai Shape 2 :", 
+                           value = 1, min = 0)
+            ),
+            "rbinom" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_size", "Masukan nilai Size :", 
+                           value = 1, min = 1),
+              numericInput("ac_prob", "Masukan nilai prob :", 
+                           value = 0.5, min = 0, max = 1, step = 0.05)
+            ),
+            "rcauchy" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_location", "Masukan nilai location :", 
+                           value = 0),
+              numericInput("ac_scale", "Masukan nilai Scale :", 
+                           value = 1, min = 0)
+            ),
+            "rchisq" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_df", "Masukan nilai df :", 
+                           value = 1, min = 1)
+            ),
+            "rexp" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_rate", "Masukan nilai rate :", 
+                           value = 1, min = 0.01, step = 1)
+            ),
+            "rf" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_df1", "Masukan nilai df1 :", 
+                           value = 1, min = 1, step = 1),
+              numericInput("ac_df2", "Masukan nilai df2 :", 
+                           value = 1, min = 1, step = 1)
+            ),
+            "rgamma" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_shape", "Masukan nilai shape :", 
+                           value = 1, min = 0, step = 1),
+              numericInput("ac_rate", "Masukan nilai rate (1/scale) :", 
+                           value = 1, min = 0.01, step = 1)
+            ),
+            "rgeom" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_prob", "Masukan nilai Prob :", 
+                           value = 0.5, min = 0.01, max = 1, step = 0.05)
+            ),
+            "rhyper" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_m", "Masukan number of white balls in the urn :", 
+                           value = 1, min = 0),
+              numericInput("ac_n", "Masukan number of black balls in the urn :", 
+                           value = 1, min = 0)
+            ),
+            "rlnorm" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_meanlog", "Masukan nilai meanlog :", 
+                           value = 0),
+              numericInput("ac_sdlog", "Masukan nilai sdlog :", 
+                           value = 1, min = 0)
+            ),
+            "rlogis" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_location", "Masukan nilai location :", 
+                           value = 0),
+              numericInput("ac_scale", "Masukan nilai scale :", 
+                           value = 1)
+            ),
+            "rweibull" = list(
+              sliderInput("ac_nSize", "Masukan sample size :",
+                          min = 1, max = input$ac_nSample-1, value = 10),
+              numericInput("ac_shape", "Masukan nilai shape :", 
+                           value = 1, min = 1),
+              numericInput("ac_scale", "Masukan nilai scale :", 
+                           value = 1, min = 0)
+            )
+    )
+    
+  })
+
+  
+  output$a_ArgSelect_extension <- renderUI({
+    if(is.null(input$a_k)) a_k<-1
+    else a_k <- input$a_k
+    switch (input$a_dist,
+            "rhyper" = list(
+              numericInput("a_k", "Masukan number of balls drawn from the urn :", 
+                           value = a_k, min = 0, max = input$a_m+input$a_n)
+            )
+    )
+    
+  })
+  
+  output$ac_ArgSelect_extension <- renderUI({
+    if(is.null(input$ac_k)) ac_k<-1
+    else ac_k <- input$ac_k
+    switch (input$ac_dist,
+            "rhyper" = list(
+              numericInput("ac_k", "Masukan number of balls drawn from the urn :", 
+                           value = ac_k, min = 0, max = input$ac_m+input$ac_n)
+            )
+    )
+    
+  })
+  
+  a_dataset <- reactive({
+    go<-input$go
+    gen_sampel<-NULL
+    switch (input$a_dist,
+            "rnorm" = {
+              gen_sampel$dat<-rnorm(input$a_nSample,input$a_mean,input$a_sd)
+              gen_sampel$judul<-"Normal"
+            },
+            "rbeta" = {
+              gen_sampel$dat<-rbeta(input$a_nSample,input$a_shape1,input$a_shape2)
+              gen_sampel$judul<-"Beta"
+            },
+            "rbinom" = {
+              gen_sampel$dat<-rbinom(input$a_nSample,input$a_size,input$a_prob)
+              gen_sampel$judul<-"Binomial"
+            },
+            "rcauchy" = {
+              gen_sampel$dat<-rcauchy(input$a_nSample,input$a_location,input$a_scale)
+              gen_sampel$judul<-"Cauchy"
+            },
+            "rchisq" = {
+              gen_sampel$dat<-rchisq(input$a_nSample,input$a_df)
+              gen_sampel$judul<-"Chi Square"
+            },
+            "rexp" = {
+              gen_sampel$dat<-rexp(input$a_nSample,input$a_rate)
+              gen_sampel$judul<-"Exponensial"
+            },
+            "rf" = {
+              gen_sampel$dat<-rf(input$a_nSample,input$a_df1,input$a_df2)
+              gen_sampel$judul<-"Fisher"
+            },
+            "rgamma" = {
+              gen_sampel$dat<-rgamma(input$a_nSample,input$a_shape,input$a_rate)
+              gen_sampel$judul<-"Gamma"
+            },
+            "rgeom" = {
+              gen_sampel$dat<-rgeom(input$a_nSample,input$a_prob)
+              gen_sampel$judul<-"Geometri"
+            },
+            "rhyper" = {
+              gen_sampel$dat<-rhyper(input$a_nSample,input$a_m,input$a_n,input$a_k)
+              gen_sampel$judul<-"Hypergeometri"
+            },
+            "rlnorm" = {
+              gen_sampel$dat<-rlnorm(input$a_nSample,input$a_meanlog,input$a_sdlog)
+              gen_sampel$judul<-"Log Normal"
+            },
+            "rlogis" = {
+              gen_sampel$dat<-rlogis(input$a_nSample,input$a_location,input$a_scale)
+              gen_sampel$judul<-"Logistic"
+            },
+            "rweibull" = {
+              gen_sampel$dat<-rweibull(input$a_nSample,input$a_shape,input$a_scale)
+              gen_sampel$judul<-"Weibull"
+            }
+    )
+    gen_sampel$sampel_terpilih <- a_generate_sampel(gen_sampel$dat,input$a_nSample,input$a_nSize);
+    gen_sampel$distribusi <- input$a_dist;
+    gen_sampel$cummean <- a_cummean(gen_sampel$sampel_terpilih)
+    return((gen_sampel))
+  })
+  
+  ac_dataset <- reactive({
+    go<-input$go
+    gen_sampel<-NULL
+    switch (input$ac_dist,
+            "rnorm" = {
+              gen_sampel$dat<-rnorm(input$ac_nSample,input$ac_mean,input$ac_sd)
+              gen_sampel$judul<-"Normal"
+            },
+            "rbeta" = {
+              gen_sampel$dat<-rbeta(input$ac_nSample,input$ac_shape1,input$ac_shape2)
+              gen_sampel$judul<-"Beta"
+            },
+            "rbinom" = {
+              gen_sampel$dat<-rbinom(input$ac_nSample,input$ac_size,input$ac_prob)
+              gen_sampel$judul<-"Binomial"
+            },
+            "rcauchy" = {
+              gen_sampel$dat<-rcauchy(input$ac_nSample,input$ac_location,input$ac_scale)
+              gen_sampel$judul<-"Cauchy"
+            },
+            "rchisq" = {
+              gen_sampel$dat<-rchisq(input$ac_nSample,input$ac_df)
+              gen_sampel$judul<-"Chi Square"
+            },
+            "rexp" = {
+              gen_sampel$dat<-rexp(input$ac_nSample,input$ac_rate)
+              gen_sampel$judul<-"Exponensial"
+            },
+            "rf" = {
+              gen_sampel$dat<-rf(input$ac_nSample,input$ac_df1,input$ac_df2)
+              gen_sampel$judul<-"Fisher"
+            },
+            "rgamma" = {
+              gen_sampel$dat<-rgamma(input$ac_nSample,input$ac_shape,input$ac_rate)
+              gen_sampel$judul<-"Gamma"
+            },
+            "rgeom" = {
+              gen_sampel$dat<-rgeom(input$ac_nSample,input$ac_prob)
+              gen_sampel$judul<-"Geometri"
+            },
+            "rhyper" = {
+              gen_sampel$dat<-rhyper(input$ac_nSample,input$ac_m,input$ac_n,input$ac_k)
+              gen_sampel$judul<-"Hypergeometri"
+            },
+            "rlnorm" = {
+              gen_sampel$dat<-rlnorm(input$ac_nSample,input$ac_meanlog,input$ac_sdlog)
+              gen_sampel$judul<-"Log Normal"
+            },
+            "rlogis" = {
+              gen_sampel$dat<-rlogis(input$ac_nSample,input$ac_location,input$ac_scale)
+              gen_sampel$judul<-"Logistic"
+            },
+            "rweibull" = {
+              gen_sampel$dat<-rweibull(input$ac_nSample,input$ac_shape,input$ac_scale)
+              gen_sampel$judul<-"Weibull"
+            }
+    )
+    gen_sampel$sampel_terpilih <- a_generate_sampel(gen_sampel$dat,input$ac_nSample,input$ac_nSize);
+    gen_sampel$distribusi <- input$ac_dist
+    gen_sampel$cummean <- a_cummean(gen_sampel$sampel_terpilih)
+    return((gen_sampel))
+  })
+  
+  output$a_grafik_distribusi <- renderPlotly({
+    # if(input$a_compare){
+    #   dat<-data.frame(sampel_terpilih=c(a_dataset()$sampel_terpilih,ac_dataset()$sampel_terpilih))
+    #   dat$distribusi<-c(rep(a_dataset()$judul,length(a_dataset()$sampel_terpilih)),
+    #               rep(ac_dataset()$judul,length(ac_dataset()$judul)))
+    #   p <- ggplot(dat, aes(x = sampel_terpilih)) +
+    #         geom_density(aes(fill = distribusi), alpha = 0.2) + 
+    #         ggtitle("Kernel Density estimates by group")
+    # } 
+      if(input$a_compare){
+      dat1<-data.frame(a_dataset())
+      dat2<-data.frame(ac_dataset())
+      dat1$distribusi<-paste("1.",a_dataset()$judul)
+      dat2$distribusi<-paste("2.",ac_dataset()$judul)
+      dat<-rbind(dat1,dat2)
+      p <- ggplot(dat, aes(sampel_terpilih, fill = distribusi)) + geom_density(alpha = 0.2)+ 
+        ggtitle(paste("Distribusi",a_dataset()$judul,"vs",ac_dataset()$judul))
+    
+    } else {
+      dat<-data.frame(a_dataset())
+      p <- ggplot(dat, aes(sampel_terpilih, fill = distribusi)) + geom_density(alpha = 0.2)+ 
+        ggtitle(paste("Distribusi",a_dataset()$judul))
+    }
+    p <- ggplotly(p);
+    return(p)
+  })
+  
+  output$a_grafik_cummean <- renderPlotly({
+    if(input$a_compare){
+        dat<-data.frame(Cummulative_Mean_1=a_cummean(a_dataset()$cummean))
+        dat$Cummulative_Mean_2<-a_cummean(ac_dataset()$cummean)
+        plot_ly(dat,y=~Cummulative_Mean_1, name = 'CumMean_1', type = 'scatter', mode = 'lines', 
+                line = list(color = 'rgb(205, 12, 24)', width = 4))%>%
+          add_trace(y = ~Cummulative_Mean_2, name = 'CumMean_2', line = list(color = 'rgb(22, 96, 167)', width = 4))%>%
+          layout(title = paste("Grafik Cumulative Mean",a_dataset()$judul,"vs",ac_dataset()$judul))
+    } else{
+      dat<-data.frame(Cummulative_Mean=a_cummean(a_dataset()$cummean))
+      plot_ly(dat,y=~Cummulative_Mean, type = 'scatter', mode = 'lines')%>%
+        layout(title = paste("Grafik Cumulative Mean",a_dataset()$judul))
+    }
+  })
+  
+  output$ac_UI_grafik<-renderUI({
+    if(input$a_nSample==input$ac_nSample) {
+      list(
+        plotlyOutput("a_grafik_distribusi"),
+        tags$hr(),
+        plotlyOutput("a_grafik_cummean")
+      )
+    } else{
+      list(
+        plotlyOutput("a_grafik_distribusi"),
+        tags$hr(),
+        "Grafik Cumulative Mean akan ditampilkan apabila banyaknya sampel antara kedua distribusi sama",
+        HTML('<button id="ac_sameSample" type="button" 
+          class="btn btn-default action-button shiny-bound-input"> 
+          Samakan banyaknya sampel</button>'), 
+        tags$script(paste(' document.getElementById("ac_sameSample").onclick = function() {
+              Shiny.onInputChange("ac_nSample",',input$a_nSample,'); }; '))
+        
+      )
+    }
+  })
+  
+  output$a_compareSide<-renderUI({
+    list(
+      selectInput("ac_dist", "Pilih Distribusi:", c(
+        "Normal"="rnorm",
+        "Beta"="rbeta",
+        "Binomial"="rbinom",
+        "Cauchy"="rcauchy",
+        "Chi Square"="rchisq",
+        "Exponensial"="rexp",
+        "Fisher"="rf",
+        "Gamma"="rgamma",
+        "Geometri"="rgeom",
+        "Hypergeometri"="rhyper",
+        "Log Normal"="rlnorm",
+        "Logistik"="rlogis",
+        "Weibull"="rweibull"
+      )),
+      sliderInput("ac_nSample", "Masukan banyaknya sample :",
+                  min = 10, max = 10000, value = 100),
+      htmlOutput("ac_ArgSelect"),
+      htmlOutput("ac_ArgSelect_extension")
+  )})
+  
+  output$a_mainPage<- renderUI({
+    if(input$a_compare){
+        fluidRow(
+        column(8,
+           htmlOutput("ac_UI_grafik")
+               ),
+        column(4,
+          htmlOutput("a_compareSide"),
+          style="border:1px; padding:19px; border-radius:4px; background-color:#f5f5f5;")
+      )}
+    else
+      list(
+        plotlyOutput("a_grafik_distribusi"),
+        tags$hr(),
+        plotlyOutput("a_grafik_cummean")
+      )
+      
+      
+  })
+  
+})
+
