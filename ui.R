@@ -114,7 +114,33 @@ navbarPage(
   ),
   ####Kelompok 1 -  MOnte Carlo & MCMC####
   tabPanel("MOnte Carlo & MCMC",
-             "Kelompok 1"
+           fluidPage(headerPanel(
+             HTML('Markov Chain Monte Carlo'
+             ), "Markov Chain Monte Carlo"
+           ),
+           fluidRow(
+             column(4,
+                    wellPanel(
+                      h4("Binomial Distribution (Likelihood) set-up"),
+                      numericInput(inputId="n",label="Percobaan",value=20,step=1,min=1,max=5000),
+                      numericInput(inputId="y",label="Sukses",value=13,step=1,max=20,min=0),
+                      h4("Jumping Distribution is a Normal Distribution"),
+                      numericInput(inputId="thetaproposalsd",label="Standar Deviasi Jumping Distribution",value=0.05,min=0.000001,max=0.2,step=0.01),
+                      numericInput(inputId="thetastart",label="Nilai Awal Theta",value=0.5,step=0.1,min=0,max=1),
+                      sliderInput(inputId="step", label=h4("Step"), 
+                                  min = 1, max = 10000, value = 1, step = 1,
+                                  animate=list(TRUE, interval=100,loop=FALSE)),
+                      br()
+                    )
+             ),
+             column(8,
+                    tabsetPanel(
+                      tabPanel("Plot",plotOutput("posteriorPlot")),
+                      tabPanel("Table",tableOutput("drawTable"))
+                    )
+             )
+           )
+           )
   ),
   
   theme = shinytheme('flatly')
