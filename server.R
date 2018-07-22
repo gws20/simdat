@@ -503,8 +503,97 @@ function(input, output, session) {
   })
   
   ####Kelompok 2 - Sampling Distribution####
+  r <- 10000 # Number of replications... must be ->inf for sampling distribution!
+  
+  palette <- c("#a876e3",
+               "#e55a76",
+               "#ff7d58",
+               "#44bb48",
+               "#e55a76")
+  
+  set.seed(as.numeric(Sys.time()))
+  
+  # Create a reactive container for the data structures that the simulation
+  # will produce. The rv$variables will be available to the sections of your
+  # server code that prepare output for the UI, e.g. output$plotSample
+  
+  rv <- reactiveValues(sample = NULL,
+                       all.sums = NULL,
+                       all.means = NULL,
+                       all.vars = NULL)
+  
+  # Note: We are giving observeEvent all the output connected to the UI actionButton.
+  # We can refer to input variables from our UI as input$variablename
+  observeEvent(input$takeSample,
+               {
+                 my.samples <- switch(input$src.dist,
+                                      "E" = matrix(rexp   (input$n*input$r, input$param1             ),input$r),
+                                      "N" = matrix(rnorm  (input$n*input$r, input$param1,input$param2),input$r),
+                                      "U" = matrix(runif  (input$n*input$r, input$param1,input$param2),input$r),
+                                      "P" = matrix(rpois  (input$n*input$r, input$param1)             ,input$r),
+                                      "C" = matrix(rcauchy(input$n*input$r, input$param1,input$param2),input$r),
+                                      "B" = matrix(rbinom (input$n*input$r, input$param1,input$param2),input$r),
+                                      "G" = matrix(rgamma (input$n*input$r, input$param1,input$param2),input$r),
+                                      "X" = matrix(rchisq (input$n*input$r, input$param1)             ,input$r),
+                                      "T" = matrix(rt     (input$n*input$r, input$param1)             ,input$r))
+                 
+                 # It was very important to make sure that rv contained numeric values for plotting:
+                 rv$sample <- as.numeric(my.samples[1,])
+                 rv$all.sums <- as.numeric(apply(my.samples,1,sum))
+                 rv$all.means <- as.numeric(apply(my.samples,1,mean))
+                 rv$all.vars <- as.numeric(apply(my.samples,1,var))
+               })
+  
+  output$plotSample <- renderPlot({
+    # Plot yang terbentuk ketika pengguna menekan tombol "Buat Plot"
+    if (input$takeSample) {
+      # Create a 2x2 plot area & leave a big space (5) at the top for title
+      par(mfrow=c(2,2), oma=c(0,0,5,0))
+      hist(rv$sample,    main="Distribution of One Sample",            ylab="Frequency",col=palette[1])    
+      hist(rv$all.sums,  main="Sampling Distribution of the Sum",      ylab="Frequency",col=palette[2])
+      hist(rv$all.means, main="Sampling Distribution of the Mean",     ylab="Frequency",col=palette[3])
+      hist(rv$all.vars,  main="Sampling Distribution of the Variance", ylab="Frequency",col=palette[4])
+      
+      mtext("Hasil Simulasi", outer=TRUE, cex=3)
+    }
+  }, height=660, width=900) # end plotSample
+  
+  observeEvent(input$takeSample2,
+               {
+                 my.samples <- switch(input$src.dist,
+                                      "E" = matrix(rexp   (input$n*input$r2, input$param1             ),input$r2),
+                                      "N" = matrix(rnorm  (input$n*input$r2, input$param1,input$param2),input$r2),
+                                      "U" = matrix(runif  (input$n*input$r2, input$param1,input$param2),input$r2),
+                                      "P" = matrix(rpois  (input$n*input$r2, input$param1)             ,input$r2),
+                                      "C" = matrix(rcauchy(input$n*input$r2, input$param1,input$param2),input$r2),
+                                      "B" = matrix(rbinom (input$n*input$r2, input$param1,input$param2),input$r2),
+                                      "G" = matrix(rgamma (input$n*input$r2, input$param1,input$param2),input$r2),
+                                      "X" = matrix(rchisq (input$n*input$r2, input$param1)             ,input$r2),
+                                      "T" = matrix(rt     (input$n*input$r, input$param1)             ,input$r2))
+                 
+                 # It was very important to make sure that rv contained numeric values for plotting:
+                 rv$sample <- as.numeric(my.samples[1,])
+                 rv$all.sums <- as.numeric(apply(my.samples,1,sum))
+                 rv$all.means <- as.numeric(apply(my.samples,1,mean))
+                 rv$all.vars <- as.numeric(apply(my.samples,1,var))
+               })
+  
+  output$plotSample2 <- renderPlot({
+    # Plot yang terbentuk ketika pengguna menekan tombol "Buat Plot"
+    if (input$takeSample) {
+      # Create a 2x2 plot area & leave a big space (5) at the top for title
+      par(mfrow=c(2,2), oma=c(0,0,5,0))
+      plot(density(rv$sample))
+      plot(density(rv$all.sums))
+      plot(density(rv$all.means))
+      plot(density(rv$all.vars))
+      mtext("Hasil Simulasi", outer=TRUE, cex=3)
+    }
+  }, height=660, width=900)
   
   ####Kelompok 2 - CLT####
+  
+  
   ####Kelompok 3 - Confidence Interval#### 
   #data default
   distribusi<-"Normal"

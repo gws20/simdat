@@ -76,13 +76,40 @@ navbarPage(
              )
            )
   ),
-  ####Kelompok 2 - Sampling Distribution####
-  tabPanel("Sampling Distribution",
-           "Kelompok 2"
-  ),
-  ####Kelompok 2 - CLT####
   tabPanel("CLT",
-           "Kelompok 2"
+           ####Analisis Seasonal####
+           #pageWithSidebar(
+  ####Kelompok 2 - Ilustrasi Histogram Hasil Simulasi####
+           sidebarPanel(
+             
+             sliderInput(inputId="n","Ukuran sample (n)",value=30,min=5,max=100,step=2),
+             sliderInput(inputId="r", "Jumlah pengulangan(r)",value=1000, min=1000, max=10000, step=1000),
+             radioButtons("src.dist", "Tipe Distribusi:",
+                          c("Exponential: Param1 = Mean,     Param2 = NOT USED" = "E",
+                            "Normal:      Param1 = Mean,     Param2 = SD" = "N",
+                            "Uniform:     Param1 = Min,      Param2 = Max" = "U",
+                            "Poisson:     Param1 = Lambda,   Param2 = NOT USED" = "P",
+                            "Cauchy:      Param1 = Location, Param2 = Scale" = "C",
+                            "Binomial:    Param1 = Size,     Param2 = Success prob" = "B",
+                            "Gamma:       Param1 = Shape,    Param2 = Scale" = "G",
+                            "Chi Square:  Param1 = DF,       Param2 = ncp" = "X",
+                            "Student t:   Param1 = DF,       Param2 = NOT USED" = "T")),
+             
+             numericInput("param1","Parameter 1:",10),
+             numericInput("param2","Parameter 2:",2),
+             actionButton("takeSample","Buat Plot")
+           ),
+           mainPanel(
+             tabsetPanel(id = "CLT",
+               tabPanel("Ilustrasi Histogram Hasil Simulasi",
+                 plotOutput("plotSample")
+               ),
+               tabPanel("Ilustrasi Density Plot Hasil Simulasi",
+                 plotOutput("plotSample2")
+               )
+             )#endtabset panel
+           ) # end mainPanel
+        #) #end sidebar
   ),
   ####Kelompok 3 - Confidence Interval#### 
   tabPanel("Confidence Interval",
