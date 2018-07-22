@@ -506,6 +506,130 @@ function(input, output, session) {
   
   ####Kelompok 2 - CLT####
   ####Kelompok 3 - Confidence Interval#### 
+  #data default
+  distribusi<-"Normal"
+  data<-rnorm(1000,0,1)
+  #sampel default
+  ss<-100
+  nos<-100
+  sampelData<-matrix(NA,ncol = ss,nrow = nos)
+  meanMatrix<-matrix(NA,ncol = 1,nrow = nos)
+  sdMatrix<-matrix(NA,ncol = 1,nrow = nos)
+  ciMatrix<-matrix(NA,ncol = 2,nrow = nos)
+  alfa<-0.05
+  
+  output$Parameter<-renderUI({
+    if(input$PilihDistribusi=="Normal"){
+      distribusi<<-"Normal"
+      tagList(
+        tags$h4("Generate Data Normal"),
+        sliderInput(inputId = "mean",label = "Mean",min = -100,max = 100,value = 0,step = 0.1),
+        sliderInput(inputId = "sd",label = "Standard Deviasi",min = -100,max=100,value=1,step=0.01)
+        
+      )
+    }else{
+      if(input$PilihDistribusi=="Chi-Square"){
+        distribusi<<-"Chi-Square"
+        tagList(
+          tags$h4("Generate Data Chi-Square"),
+          sliderInput(inputId = "df",label = "Derajat Bebas",min = 1,max = 200,step = 1,value = 10),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Generate Data Sampel")
+        )
+        
+      }  
+    }
+  })
+  #generate populasi
+  generatePopulasi<-function(){
+    if(input$PilihDistribusi=="Normal"){
+      data<<-rnorm(input$NumberOfData,mean = input$mean,sd = input$sd)
+    }else{
+      if(input$PilihDistribusi=="Chi-Square"){
+        data<<-rchisq(n = input$NumberOfData,df = input$df)
+      }
+    }
+  }
+  
+  output$plotDataPopulasi<-renderPlot({
+    generatePopulasi()
+    hist(data,probability = TRUE,col=4,main = "Histogram Data Populasi")
+    abline(v=mean(data),col=2,lwd=2)
+  })
+  
+  
+  
+  #generate sampel
+  generateSampel<-function(sampelSize,numberOfSampel,Alfa){
+    ss<<-sampelSize
+    nos<<-numberOfSampel
+    sampelData<<-matrix(NA,ncol = ss,nrow = nos)
+    meanMatrix<<-matrix(NA,ncol = 1,nrow = nos)
+    alfa<<-Alfa
+    ciMatrix<<-matrix(NA,ncol = 2,nrow = nos)
+    for(i in seq(nos)){
+      sampelData[i,]<<-sample(x = data,size = ss,replace = TRUE)
+      meanMatrix[i,1]<<-mean(sampelData[i,])
+      sdMatrix[i,1]<<-sd(sampelData[i,])
+      ciMatrix[i,1]<<-meanMatrix[i,1]+qnorm((alfa/2),0,1)*sdMatrix[i,1]/sqrt(ss)
+      ciMatrix[i,2]<<-meanMatrix[i,1]+qnorm(1-(alfa/2),0,1)*sdMatrix[i,1]/sqrt(ss)
+    }
+  }
+  #generate CI
+  generateCI<-function(alfa){
+    alfa<<-input$alfa
+    ciMatrix<<-matrix(NA,ncol = 2,nrow = nos)
+    for(i in seq(nos)){
+      ciMatrix[i,1]<<-meanMatrix[i,1]+qnorm(alfa/2,0,1)*sdMatrix[i,1]/sqrt(ss)
+      ciMatrix[i,2]<<-meanMatrix[i,1]+qnorm(1-alfa/2,0,1)*sdMatrix[i,1]/sqrt(ss)
+    }
+  }
+  output$CI<-renderUI({
+    tagList(
+      tags$hr(),
+      tags$br(),
+      tags$h4("Generate Confidence Interval"),
+      sliderInput(inputId = "alfa",label = "Alfa",min = 0.01,max = 1,step = 0.01,value = 0.05)
+    )
+  })
+  
+  output$sampel<-renderPrint({
+    if(distribusi!=input$PilihDistribusi){
+      generatePopulasi()
+    }
+    generateSampel(sampelSize = input$SampelSize,numberOfSampel = input$NumberOfSampel,Alfa = input$alfa)
+    summary(t(sampelData))
+  })
+  output$plotCI<-renderPlot({
+    if(is.na(ciMatrix[1,1])){
+      generateSampel(sampelSize = input$SampelSize,numberOfSampel = input$NumberOfSampel,Alfa = input$alfa)
+    }
+    if((ss!=input$SampelSize)||(nos!=input$NumberOfSampel)){
+      generateSampel(sampelSize = input$SampelSize,numberOfSampel = input$NumberOfSampel,Alfa = input$alfa)
+    }
+    generateCI(input$alfa)
+    xkor<-c(ciMatrix[,1],ciMatrix[,2])
+    ykor<-c(seq(1,nos,by = 1),seq(1,nos,by = 1))
+    miuData<-mean(sampelData)
+    plot(xkor,ykor,xlab = "Rata-rata Sampel",ylab = "Data Ke",main = "Confidence Interval Nilai Rata-Rata Sampel")
+    #create segment
+    
+    for(i in seq(nos)){
+      #jika data berada miu berada diluar interval
+      if((miuData>xkor[i+nos])||(miuData<xkor[i])){
+        #segmen berwarna merah
+        segments(xkor[i], ykor[i], xkor[i+nos], ykor[i+nos], col= 'red')  
+      }else{
+        #segment berwarna hitam
+        segments(xkor[i], ykor[i], xkor[i+nos], ykor[i+nos], col= 'blue')  
+      }
+      
+    }
+    abline(v = miuData)
+  })
+  
+  
   ####Kelompok 1 -  MOnte Carlo & MCMC####
  
   

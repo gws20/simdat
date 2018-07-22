@@ -86,7 +86,31 @@ navbarPage(
   ),
   ####Kelompok 3 - Confidence Interval#### 
   tabPanel("Confidence Interval",
-           "Kelompok 3"
+           sidebarPanel(
+             selectInput(inputId="PilihDistribusi", label = "Distribusi Data", choices = c("Normal", "Chi-Square"),selected = "Normal"),
+             sliderInput(inputId="NumberOfData",label = "Banyaknya Data",min = 100,max = 100000,value = 1000),
+             tags$br(),
+             tags$h4("Generate Data Sampel"),
+             sliderInput(inputId="NumberOfSampel",label = "Number Of Sampel", min = 10, max = 100,value = 100,step = 1),
+             sliderInput(inputId="SampelSize",label = "Sampel Size", min = 10,max = 1000,value = 100),
+             tags$br(),
+             uiOutput(outputId="CI"),
+             textOutput(outputId="text"),
+             tags$br(),
+             uiOutput(outputId="Parameter")
+           ),
+           
+           mainPanel(
+             navbarPage("Plotts",
+                        tabPanel("Plot Data Populasi",
+                                 plotOutput(outputId="plotCI"),
+                                 plotOutput(outputId="plotDataPopulasi")
+                        ),
+                        tabPanel("Summary Data Sampel",
+                                 verbatimTextOutput(outputId="sampel")
+                        )
+             )
+           )
   ),
   ####Kelompok 1 -  MOnte Carlo & MCMC####
   tabPanel("MOnte Carlo & MCMC",
